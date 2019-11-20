@@ -59,7 +59,9 @@ available, including descriptions of input and output formats, by typing
 the name of the program with no input. For example, in the bin
 directory you can type
 
+```sh
 > layout
+```
 
 to get a full description of the inputs to the force directed layout
 program.
@@ -86,9 +88,11 @@ adhere to the below "standards:"
 
 2.  Each program has the format
 
-    > command_name [options] root_name
+    ```sh
+    command_name [options] root_name
+    ```
 
-    where the [options] are flags such as "-e," sometimes with an
+    where the __[options]__ are flags such as "-e," sometimes with an
     argument. If you want to change a command just add a flag.  
     If you want to change the behavior of an existing flag, make sure
     the preivous behavior is still available. If you want to add a new

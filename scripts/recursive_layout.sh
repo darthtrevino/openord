@@ -21,7 +21,7 @@ MPIBIN=/home/smartin/recursive_layout/bin			# mpi bin
 MPIDATA=/home/smartin/recursive_layout/datasets/yeast_gs	# mpi data
 
 # serial bin
-BINDIR=../../bin				# regular bin directory
+BINDIR=./bin				# regular bin directory
 
 # general inputs
 ROOTNAME=yeast				# root name of project
