@@ -25,7 +25,7 @@ matrix for a weighted graph.
 To run serial non-recursive OpenOrd, execute
 
 ```sh
-> ./bin/truncate examples/data/yeast
+> truncate yeast
 ```
 
 The truncate command truncates and converts a .sim file into .int files,
@@ -34,14 +34,14 @@ toolbox. One of the main outputs of this routine is a conversion from
 strings to integer ids.
 
 ```sh
-> ./bin/layout examples/data/yeast
+> layout yeast
 ```
 
 The layout program is the central engine and does the force-directed
 graph drawing using the .int file.
 
 ```sh
-> ./bin/recoord examples/data/yeast
+> recoord yeast
 ```
 
 The recoord command re-converts the .icoord file to a standard .coord
@@ -163,9 +163,9 @@ Now go to the examples/parallel directory. Depending on the parallel
 computer, you can type something like
 
 ```sh
-> ../../bin/truncate yeast
-> mpirun -n 4 ../../bin/layout yeast
-> ../../bin/recoord yeast
+> truncate yeast
+> mpirun -n 4 layout yeast
+> recoord yeast
 ```
 
 The result using four processors is shown in parallel.pdf. Note that
@@ -191,7 +191,7 @@ your computer.
    other codes have similar options, and the recursive_layout.sh script
    also has variables that can be changed to affect these options.
 
-## Real-Time Option
+## Real-Time Option (examples/realtime.sh)
 
 The last feature that might be of interest in OpenOrd is the real-time
 clustering option, which allows you to add new points to an existing
@@ -201,22 +201,28 @@ contains the first 90% of yeast.sim.
 
 First you have to create a layout using the yeast_90.sim file:
 
-> ../../bin/truncate yeast_90
-> ../../bin/layout yeast_90
-> ../../bin/recoord yeast_90
+```sh
+> truncate yeast_90
+> layout yeast_90
+> recoord yeast_90
+```
 
 Now you have to save the results of the yeast_90 layout for use as
 a starting position for the entire dataset. This is done by
 creating a .real file as follows:
 
+```sh
 > cp yeast_90.coord yeast.coord
-> ../../bin/truncate -r yeast
+> truncate -r yeast
+```
 
 Finally you can use the base layout with the entire yeast.sim file. The
 -r flag in layout specifies the length of time to leave the coordinates
 from the .real file fixed (below we leave them permanently fixed).
 
-> ../../bin/layout -r 1 yeast
-> ../../bin/recoord yeast
+```sh
+> layout -r 1 yeast
+> recoord yeast
+```
 
 The results of these commands are shown in realtime.pdf.
