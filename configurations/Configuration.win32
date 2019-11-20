@@ -14,7 +14,8 @@
 # ***************************************************************************/
 
 #Locations of outside objects relative to a source directory
-HOBJ_DIR = ../obj
+HOBJ_DIR = ./obj
+SRC_DIR = ./src
 
 ALL_DIR	= ./
 ALL_LIB = $(HOBJ_DIR)/liball.a
@@ -24,14 +25,14 @@ MATH_LIB = $(HOBJ_DIR)/libmath.a
 
 EVERY_LIB = $(MATH_LIB) $(ALL_LIB)
 
-BIN_DIR = ../bin/
+BIN_DIR = ./bin/
 
 
 # Compiler Setup
 CPP         = g++     # C++ Compiler
 CC          = gcc     # C compiler
 AR          = ar
-INC         = -I$(ALL_DIR) -I$(MATH_DIR)
+INC         = -I$(ALL_DIR) -I$(MATH_DIR) -I$(SRC_DIR)
 DBUG        = #-g -Wall -pedantic -g #-DDEBUG #-ansi
 OPT         = -O3
 CFLAGS      = $(OPT) $(MOVIE) $(DBUG) $(INC) $(GSLC) $(LIBGAC) -c
