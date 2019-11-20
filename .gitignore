@@ -1,1 +1,5 @@
+# binary outputs
+bin/
+obj/
+
 .DS_Store
