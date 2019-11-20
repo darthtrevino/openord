@@ -20,8 +20,10 @@ MPI=0								# use mpiexec
 MPIBIN=/home/smartin/recursive_layout/bin			# mpi bin
 MPIDATA=/home/smartin/recursive_layout/datasets/yeast_gs	# mpi data
 
-# serial bin
-BINDIR=./bin				# regular bin directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BIN_DIR="$SCRIPT_DIR/../bin"				# regular bin directory
+OUT_DIR="$SCRIPT_DIR/../output/recursive"
+DATA_DIR="$SCRIPT_DIR/data"
 
 # general inputs
 ROOTNAME=yeast				# root name of project
@@ -46,6 +48,15 @@ SCALE=450		# scale coarsest layout up
 REFINE_CUT=.5		# refining edge cut
 FINAL_CUT=.5		# final edge cut
 
+#### Set up the workspace
+# prepare working directory
+mkdir -p $OUT_DIR
+# copy data to working folder
+cp $DATA_DIR/yeast.sim $OUT_DIR/yeast.sim
+# copy parms to working folder
+cp $SCRIPT_DIR/recursive/*.parms $OUT_DIR
+pushd $OUT_DIR
+
 # calls start here:
 
 if [ $STARTLEVEL -eq 1 ]
@@ -64,11 +75,11 @@ then
   echo "----- INITIAL TRUNCATION -----"
   if [ $INIT_NORM -eq 0 ]
   then
-    echo $BINDIR"/truncate -t" $TRUNCATE_LINKS "-m" $MEMORY $ROOTNAME
-    $BINDIR/truncate -t $TRUNCATE_LINKS -m $MEMORY $ROOTNAME
+    echo $BIN_DIR"/truncate -t" $TRUNCATE_LINKS "-m" $MEMORY $ROOTNAME
+    $BIN_DIR/truncate -t $TRUNCATE_LINKS -m $MEMORY $ROOTNAME
   else
-    echo $BINDIR"truncate -n -t" $TRUNCATE_LINKS "-m" $MEMORY $ROOTNAME
-    $BINDIR/truncate -n -t $TRUNCATE_LINKS -m $MEMORY $ROOTNAME
+    echo $BIN_DIR"truncate -n -t" $TRUNCATE_LINKS "-m" $MEMORY $ROOTNAME
+    $BIN_DIR/truncate -n -t $TRUNCATE_LINKS -m $MEMORY $ROOTNAME
   fi
 
   # copy the .int file to .coarse_int
@@ -87,8 +98,8 @@ then
     echo "mpiexec" $MPIBIN"/layout -p -e -c" $INIT_CUT $MPIDATA"/"$ROOTNAME
     mpiexec $MPIBIN/layout -p -e -c $INIT_CUT $MPIDATA/$ROOTNAME
   else
-    echo $BINDIR"/layout -p -e -c" $INIT_CUT $ROOTNAME
-    $BINDIR/layout -p -e -c $INIT_CUT $ROOTNAME
+    echo $BIN_DIR"/layout -p -e -c" $INIT_CUT $ROOTNAME
+    $BIN_DIR/layout -p -e -c $INIT_CUT $ROOTNAME
   fi
 
 else # end initial file creation
@@ -126,15 +137,15 @@ do
   # now we use the average link clustering algorithm
   if [ $LEVEL -eq 1 ]
   then
-    echo $BINDIR"/average_link" $ROOTNAME
-    $BINDIR/average_link $ROOTNAME
+    echo $BIN_DIR"/average_link" $ROOTNAME
+    $BIN_DIR/average_link $ROOTNAME
     echo "mv" $ROOTNAME".icoord" $ROOTNAME".coarse_icoord"
     echo "mv" $ROOTNAME".iedges" $ROOTNAME".coarse_iedges"
     mv $ROOTNAME".icoord" $ROOTNAME".coarse_icoord"
     mv $ROOTNAME".iedges" $ROOTNAME".coarse_iedges"
   else
-    echo $BINDIR"/average_link" $ROOTNAME"_"$LEVEL
-    $BINDIR/average_link $ROOTNAME"_"$LEVEL
+    echo $BIN_DIR"/average_link" $ROOTNAME"_"$LEVEL
+    $BIN_DIR/average_link $ROOTNAME"_"$LEVEL
     echo "mv" $ROOTNAME"_"$LEVEL".icoord" $ROOTNAME"_"$LEVEL".coarse_icoord"
     echo "mv" $ROOTNAME"_"$LEVEL".iedges" $ROOTNAME"_"$LEVEL".coarse_iedges"
     mv $ROOTNAME"_"$LEVEL".icoord" $ROOTNAME"_"$LEVEL".coarse_icoord"
@@ -146,11 +157,11 @@ do
   # now we coarsen
   if [ $NORMALIZE -eq 0 ]
   then
-    echo $BINDIR"/coarsen -l" $LEVEL "-m" $MEMORY $ROOTNAME
-    $BINDIR/coarsen -l $LEVEL -m $MEMORY $ROOTNAME
+    echo $BIN_DIR"/coarsen -l" $LEVEL "-m" $MEMORY $ROOTNAME
+    $BIN_DIR/coarsen -l $LEVEL -m $MEMORY $ROOTNAME
   else
-    echo $BINDIR"/coarsen -l" $LEVEL "-n -m" $MEMORY $ROOTNAME
-    $BINDIR/coarsen -l $LEVEL -n -m $MEMORY $ROOTNAME
+    echo $BIN_DIR"/coarsen -l" $LEVEL "-n -m" $MEMORY $ROOTNAME
+    $BIN_DIR/coarsen -l $LEVEL -n -m $MEMORY $ROOTNAME
   fi
 
   # save .int files to .coarse_int for later
@@ -170,8 +181,8 @@ do
        echo "mpiexec" $MPIBIN"/layout -p -e -c" $LAST_CUT $MPIDATA"/"$ROOTNAME"_"$LEVEL
        mpiexec $MPIBIN/layout -p -e -c $LAST_CUT $MPIDATA/$ROOTNAME"_"$LEVEL
      else
-       echo $BINDIR"/layout -p -e -c" $LAST_CUT $ROOTNAME"_"$LEVEL
-       $BINDIR/layout -p -e -c $LAST_CUT $ROOTNAME"_"$LEVEL
+       echo $BIN_DIR"/layout -p -e -c" $LAST_CUT $ROOTNAME"_"$LEVEL
+       $BIN_DIR/layout -p -e -c $LAST_CUT $ROOTNAME"_"$LEVEL
      fi
 
   else 	
@@ -185,8 +196,8 @@ do
        echo "mpiexec" $MPIBIN"/layout -p -e -c" $COARSE_CUT $MPIDATA"/"$ROOTNAME"_"$LEVEL
        mpiexec $MPIBIN/layout -p -e -c $COARSE_CUT $MPIDATA/$ROOTNAME"_"$LEVEL
      else
-       echo $BINDIR"/layout -p -e -c" $COARSE_CUT $ROOTNAME"_"$LEVEL
-       $BINDIR/layout -p -e -c $COARSE_CUT $ROOTNAME"_"$LEVEL
+       echo $BIN_DIR"/layout -p -e -c" $COARSE_CUT $ROOTNAME"_"$LEVEL
+       $BIN_DIR/layout -p -e -c $COARSE_CUT $ROOTNAME"_"$LEVEL
      fi
 
   fi
@@ -214,8 +225,8 @@ do
   echo "----- REFINING AT LEVEL" $LEVEL "-----"
 
   # refine
-  echo $BINDIR"/refine -r -s" $SCALE "-l" $LEVEL $ROOTNAME
-  $BINDIR/refine -r -s $SCALE -l $LEVEL $ROOTNAME
+  echo $BIN_DIR"/refine -r -s" $SCALE "-l" $LEVEL $ROOTNAME
+  $BIN_DIR/refine -r -s $SCALE -l $LEVEL $ROOTNAME
 
   let LEVEL-=1
 
@@ -234,8 +245,8 @@ do
        echo "mpiexec" $MPIBIN"/layout -r 0 -p -e -c" $FINAL_CUT $MPIDATA"/"$ROOTNAME
        mpiexec $MPIBIN/layout -r 0 -p -e -c $FINAL_CUT $MPIDATA/$ROOTNAME
      else
-       echo $BINDIR"/layout -r 0 -p -e -c" $FINAL_CUT $ROOTNAME
-       $BINDIR/layout -r 0 -p -e -c $FINAL_CUT $ROOTNAME
+       echo $BIN_DIR"/layout -r 0 -p -e -c" $FINAL_CUT $ROOTNAME
+       $BIN_DIR/layout -r 0 -p -e -c $FINAL_CUT $ROOTNAME
      fi
 
      # now copy final coords and edges files
@@ -257,8 +268,8 @@ do
        echo "mpiexec" $MPIBIN"/layout -r 0 -p -e -c" $REFINE_CUT $MPIDATA"/"$ROOTNAME"_"$LEVEL
        mpiexec $MPIBIN/layout -r 0 -p -e -c $REFINE_CUT $MPIDATA/$ROOTNAME"_"$LEVEL
      else
-       echo $BINDIR"/layout -r 0 -p -e -c" $REFINE_CUT $ROOTNAME"_"$LEVEL
-       $BINDIR/layout -r 0 -p -e -c $REFINE_CUT $ROOTNAME"_"$LEVEL
+       echo $BIN_DIR"/layout -r 0 -p -e -c" $REFINE_CUT $ROOTNAME"_"$LEVEL
+       $BIN_DIR/layout -r 0 -p -e -c $REFINE_CUT $ROOTNAME"_"$LEVEL
      fi
 
      echo "cp" $ROOTNAME"_"$LEVEL".icoord" $ROOTNAME"_"$LEVEL".refine_iccord"
@@ -277,8 +288,8 @@ cp $ROOTNAME".refine_icoord" $ROOTNAME".icoord"
 echo "cp" $ROOTNAME".refine_iedges" $ROOTNAME".iedges"
 cp $ROOTNAME".refine_iedges" $ROOTNAME".iedges"
 
-echo $BINDIR"/recoord -e" $ROOTNAME
-$BINDIR/recoord -e $ROOTNAME
+echo $BIN_DIR"/recoord -e" $ROOTNAME
+$BIN_DIR/recoord -e $ROOTNAME
 
 # erase miscellaneous .ints, .icoords, .iedges, and .parms
 rm *.int

@@ -1,6 +1,19 @@
+.DS_Store
+
 # binary outputs
 bin/
 obj/
 
-.DS_Store
+# example outputs
+output
+
+# Current configuration file
 Configuration.mk
+
+# Tooling outputs
+*.full
+*.ind
+*.int
+*.simread
+*.icoord
+*.coord
